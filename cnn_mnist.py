@@ -2,23 +2,10 @@
 
 import numpy as np
 import tensorflow as tf
-
 # 下载并载入 MNIST 手写数字库（55000 * 28 * 28）55000 张训练图像
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets('mnist_data', one_hot=True)
 
-# one_hot 独热码的编码（encoding）形式
-# 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 的十位数字
-# 0 : 1000000000
-# 1 : 0100000000
-# 2 : 0010000000
-# 3 : 0001000000
-# 4 : 0000100000
-# 5 : 0000010000
-# 6 : 0000001000
-# 7 : 0000000100
-# 8 : 0000000010
-# 9 : 0000000001
 
 # None 表示张量（Tensor）的第一个维度可以是任何长度
 # 除以 255 是为了做 归一化（Normalization），把灰度值从 [0, 255] 变成 [0, 1] 区间
@@ -35,7 +22,7 @@ input_x_images = tf.reshape(input_x, [-1, 28, 28, 1])  # 改变形状之后的�
 test_x = mnist.test.images[:3000]  # 图片
 test_y = mnist.test.labels[:3000]  # 标签
 
-# 构建我们的卷积神经网络：
+# 构建卷积神经网络：
 # 第 1 层卷积
 conv1 = tf.layers.conv2d(
     inputs=input_x_images,  # 形状 [28, 28, 1]
@@ -73,7 +60,7 @@ pool2 = tf.layers.max_pooling2d(
     strides=2          # 步长是 2
 )  # 形状 [7, 7, 64]
 
-# 平坦化（flat）。降维
+# 平坦化（flat） 降维
 flat = tf.reshape(pool2, [-1, 7 * 7 * 64])  # 形状 [7 * 7 * 64, ]
 
 # 1024 个神经元的全连接层
@@ -83,7 +70,7 @@ dense = tf.layers.dense(inputs=flat, units=1024, activation=tf.nn.relu)
 dropout = tf.layers.dropout(inputs=dense, rate=0.5)
 
 
-# 10 个神经元的全连接层，这里不用激活函数来做非线性化了
+# 10 个神经元的全连接层，不用激活函数来做非线性化
 logits = tf.layers.dense(inputs=dropout, units=10)  # 输出。形状 [1, 1, 10]
 
 # 计算误差（先用 Softmax 计算百分比概率，
@@ -105,7 +92,7 @@ sess = tf.Session()
 init = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
 sess.run(init)
 
-# 训练 5000 步。这个步数可以调节
+# 训练 5000 步
 for i in range(5000):
     batch = mnist.train.next_batch(50)  # 从 Train（训练）数据集里取 “下一个” 50 个样本
     train_loss, train_op_ = sess.run([loss, train_op], {input_x: batch[0], output_y: batch[1]})
