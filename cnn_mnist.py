@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 import numpy as np
 import tensorflow as tf
 # 下载并载入 MNIST 手写数字库（55000 * 28 * 28）55000 张训练图像
